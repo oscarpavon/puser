@@ -14,6 +14,8 @@ say_hello:
 ;;linux syscall sys_read = 0 sys_write = 1 sys_close = 3 sys_open = 2 sys_lseek = 8
 
 SYS_EXIT = 60
+SYS_WRITE = 1
+STDOUT = 1
 
 read:
       mov rax,0
@@ -42,6 +44,11 @@ lseek:
 
 ;;end linux syscall
 
+print:
+      mov edi,STDOUT
+      mov eax,SYS_WRITE
+      syscall
+      ret
 
 sys_exit:
       mov rax, SYS_EXIT

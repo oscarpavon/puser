@@ -13,7 +13,10 @@ segment readable executable
 
 entry $
 	
-	mov rax,4
+	mov edx,msg_size
+	lea rsi,[msg]
+	call print
+	
 	call sys_exit
 	ret
 
