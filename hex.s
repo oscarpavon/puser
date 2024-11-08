@@ -13,16 +13,42 @@ segment readable executable
 
 entry $
 	
-	mov cx,10
-	myloop:
-		push cx
-		call print_msg
-		pop cx
-		dec cx
-		jnz myloop
-	
+
+	mov ax,254
+	mov bl,16
+	div bl
+	mov dh,ah
+	mov cx,2
+	cmp ah,10
+	jl decimal
+	jge hex
+	back:
+	cmp cx,0
+	jz result
+	mov [msg+1],dh
+	mov dh,al
+	cmp al,10
+	jl decimal
+	jge hex
+
+decimal:
+	add dh,'0'
+	dec cx
+	jmp back
+
+hex:
+	sub dh,10
+	add dh,'a'
+	dec cx
+	jmp back
+
+result:
+	mov [msg],dh
+	call print_msg	
+
 	call sys_exit
-	ret
+	
+
 
 print_msg:
 	mov edx,msg_size
@@ -30,10 +56,22 @@ print_msg:
 	call print
 	ret
 	
+	
+	mov cx,0
+	myloop:
+		mov al,cl
+		add al,'0'
+		mov [msg],al
+		push cx
+		call print_msg
+		pop cx
+		inc cx
+		cmp cx,10
+		jne myloop
 
 include "syscall.s"
 
 segment readable writeable
 
-msg db 'Hello from fasm elf',0xA
+msg db '00',0xA
 msg_size = $-msg
