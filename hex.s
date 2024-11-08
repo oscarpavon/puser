@@ -13,12 +13,23 @@ segment readable executable
 
 entry $
 	
-	mov edx,msg_size
-	lea rsi,[msg]
-	call print
+	mov cx,10
+	myloop:
+		push cx
+		call print_msg
+		pop cx
+		dec cx
+		jnz myloop
 	
 	call sys_exit
 	ret
+
+print_msg:
+	mov edx,msg_size
+	lea rsi,[msg]
+	call print
+	ret
+	
 
 include "syscall.s"
 
