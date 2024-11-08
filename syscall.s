@@ -28,8 +28,16 @@ SEEK_SET = 0	;Seek from beginning of file
 SEEK_CUR = 1	;Seek from current position
 SEEK_END = 2	;Seek from end of file
 
+EACCES = 13
+
+O_RDONLY = 0000o
+
 STDOUT = 1
 
+
+;rdi file descriptors
+;rsi memory
+;rdx bytes to read
 read:
       mov rax,SYS_READ
       syscall
@@ -48,13 +56,14 @@ open:
       syscall
       ret
 
-;edi = bytes to allocate
+;rdi = bytes to allocate
 ;out eax = memory position allocate
 brk:
       mov rax,SYS_BRK
       syscall
       ret
 
+;rdi file descriptor to close
 close:
       mov rax,SYS_CLOSE
       syscall
