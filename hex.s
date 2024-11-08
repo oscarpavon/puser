@@ -14,7 +14,7 @@ segment readable executable
 entry $
 	
 
-	mov ax,254
+	mov ax,0xef
 	mov bl,16
 	div bl
 	mov dh,ah
