@@ -24,6 +24,9 @@ SYS_EXIT = 60
 ;end syscall
 
 
+SEEK_SET = 0	;Seek from beginning of file
+SEEK_CUR = 1	;Seek from current position
+SEEK_END = 2	;Seek from end of file
 
 STDOUT = 1
 
@@ -46,7 +49,7 @@ open:
       ret
 
 ;edi = bytes to allocate
-;out eax = memory position allocated
+;out eax = memory position allocate
 brk:
       mov rax,SYS_BRK
       syscall
@@ -57,6 +60,10 @@ close:
       syscall
       ret
 
+;rdi file descriptor
+;rsi offset
+;rdx seek option
+;out eax position in bytes
 lseek:
       mov rax,SYS_LSEEK
       syscall
