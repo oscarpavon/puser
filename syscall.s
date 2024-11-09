@@ -32,7 +32,10 @@ EACCES = 13
 
 O_RDONLY = 0000o
 
+;Standard Linux file descriptors
+STDIN = 0
 STDOUT = 1
+STDERR = 2
 
 
 ;rdi file descriptors

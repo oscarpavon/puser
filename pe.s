@@ -6,12 +6,23 @@
 ; rsi	; 2nd param
 ; rdi	; 1st param
 
+ESC = 0x1b
+
 
 format ELF64 executable 3
 
 segment readable executable
 
 entry $
+
+	mov rdx,clear_screen_size
+	lea rsi,[clear_screen]
+	call print
+
+main_loop:
+
+
+	jmp main_loop
 
 	lea rdi,[file_to_open]
 	mov rsi, O_RDONLY
@@ -61,7 +72,6 @@ entry $
 	call read
 
 	
-	
 	mov rdi, r10
 	call close
 
@@ -74,8 +84,6 @@ entry $
 	lea rsi,[error_open_file_msg]
 	call print
 
-
-	
 
 
 	call print_msg
@@ -108,7 +116,9 @@ msg_size = $-msg
 error_open_file_msg db 'Cant open file',0xA
 error_open_file_msg_size = $-error_open_file_msg
 
-file_to_open db 'test.txt',0
+file_to_open db 'pe.s',0
 
 allocated_memory dq ?
 
+clear_screen: db ESC, "[2J"
+clear_screen_size = $ - clear_screen
