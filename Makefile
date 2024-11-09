@@ -4,8 +4,8 @@ pcc: pcc.o syscall.o
 pcc.o: pcc.c
 	gcc -c pcc.c -o pcc.o
 
-syscall.o: syscall.s
-	fasm syscall.s syscall.o
+syscall.o: syscallc.s
+	fasm syscallc.s syscall.o
 
 clean:
 	rm -f *.o pcc
