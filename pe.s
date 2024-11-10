@@ -7,6 +7,7 @@
 ; rdi	; 1st param
 
 ESC = 0x1b
+local_mode_offset = 12
 
 
 format ELF64 executable 3
@@ -26,16 +27,35 @@ entry $
 	cmp rax, 0
 	jne ioctl_error
 
+
+	mov eax, [termios+local_mode_offset]
+	mov edx, ICANON
+	not edx
+	and eax,edx
+	mov [termios+local_mode_offset], eax
+
+	mov rdi, STDIN
+	mov rsi, TCSETS
+	lea rdx, [termios]
+	call ioctl
+	cmp rax, 0
+	jne ioctl_error
+
+
 	mov rdx, msg_size
 	lea rsi, [msg]
 	call print
 
 main_loop:
 
-
-	call sys_exit
+	mov rdi, STDIN
+	lea rsi,[r10]
+	mov rdx,1
+	call read
 
 	jmp main_loop
+
+	call sys_exit
 
 ioctl_error:
 	lea rsi, [error_ioctl]	

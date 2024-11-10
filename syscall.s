@@ -42,6 +42,8 @@ STDERR = 2
 TCGETS = 0x5401
 TCSETS = 0x5402
 
+ICANON = 0x00000002
+
 ;rdi file descriptor
 ;rsi command IOCTL number
 ;rdx argument data structure
@@ -73,8 +75,8 @@ open:
       syscall
       ret
 
-;rdi = bytes to allocate
-;out eax = memory position allocate
+;rdi = 0 to get brk position / got position - bytes
+;out eax = got position / memory position allocated
 brk:
       mov rax,SYS_BRK
       syscall
