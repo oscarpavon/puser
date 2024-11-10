@@ -52,16 +52,22 @@ _start:
       ;passing arguments by stack not work
       ;7 8 9 argument in reverse order 
       mov rax,0xffffffff;white backgorund 
-      ;push rax
+      push rax
       
       mov rax,0;border
-      ;push rax
+      push rax
       
       mov rax,0;border_width
-      ;push rax
+      push rax
 
 
       call XCreateSimpleWindow
+      
+      ;we need to pop from the stack after function call
+      add rsp,8
+      add rsp,8
+      add rsp,8
+
       mov r13,rax;save window
 
       mov rdi,r15
