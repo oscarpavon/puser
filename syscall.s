@@ -20,7 +20,9 @@ SYS_OPEN = 2
 SYS_CLOSE = 3
 SYS_LSEEK = 8
 SYS_BRK = 12
+SYS_IOCTL = 16
 SYS_EXIT = 60
+
 ;end syscall
 
 
@@ -36,6 +38,18 @@ O_RDONLY = 0000o
 STDIN = 0
 STDOUT = 1
 STDERR = 2
+
+TCGETS = 0x5401
+TCSETS = 0x5402
+
+;rdi file descriptor
+;rsi command IOCTL number
+;rdx argument data structure
+;out rax 0 success - negative error
+ioctl:
+      mov rax, SYS_IOCTL
+      syscall
+      ret
 
 
 ;rdi file descriptors

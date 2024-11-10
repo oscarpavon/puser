@@ -122,3 +122,11 @@ allocated_memory dq ?
 
 clear_screen: db ESC, "[2J"
 clear_screen_size = $ - clear_screen
+
+termios rd 4;c_iflag input mode flags
+						;c_oflag output mode flags
+						;c_cflag control mode flags
+						;c_lflag local mode flags
+				rb 1;c_line line discipline
+				rb 19	; c_cc control characters 19 bytes
+
