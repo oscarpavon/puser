@@ -1,4 +1,4 @@
-all: bin_dir pcc pwin hex
+all: bin_dir pcc pwin hex pe
 
 hex:
 	fasm hex.s ./bin/hex
@@ -6,8 +6,11 @@ hex:
 bin_dir:
 	mkdir -p ./bin
 
+pe: pe.s
+	fasm pe.s ./bin/pe
+
 pwin: pwin.o
-	gcc -no-pie -nostdlib -o ./bin/pwin -lX11
+	gcc -no-pie -nostdlib pwin.o -o ./bin/pwin -lX11
 
 pwin.o: pwin.s
 	fasm pwin.s pwin.o
