@@ -19,9 +19,27 @@ entry $
 	lea rsi,[clear_screen]
 	call print
 
+	mov rdi, STDIN
+	mov rsi, TCGETS
+	lea rdx, [termios]
+	call ioctl
+	cmp rax, 0
+	jne ioctl_error
+
+	mov rdx, msg_size
+	lea rsi, [msg]
+	call print
+
 main_loop:
 
 
+	call sys_exit
+
+	jmp main_loop
+
+ioctl_error:
+	lea rsi, [error_ioctl]	
+	mov rdx, error_ioctl_size
 	jmp main_loop
 
 	lea rdi,[file_to_open]
@@ -113,6 +131,9 @@ segment readable writeable
 msg db 'Message',0xA
 msg_size = $-msg
 
+error_ioctl db 'ioctl error', 0xA
+error_ioctl_size = $-error_ioctl
+
 error_open_file_msg db 'Cant open file',0xA
 error_open_file_msg_size = $-error_open_file_msg
 
@@ -123,7 +144,7 @@ allocated_memory dq ?
 clear_screen: db ESC, "[2J"
 clear_screen_size = $ - clear_screen
 
-termios rd 4;c_iflag input mode flags
+termios rd 4;c_iflag input mode flags 4 bytes each
 						;c_oflag output mode flags
 						;c_cflag control mode flags
 						;c_lflag local mode flags
