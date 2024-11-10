@@ -6,20 +6,23 @@
 ; rdi	; 1st param
 format ELF64
 section '.text' executable
-      public _start
       extrn XOpenDisplay ;out eax display pointer ;rdi 0
      
       extrn XDefaultRootWindow;rdi display out root window
                                
-                               ;display, root, 0, 0, 800, 600, 0, 0, 0xffffffff
-      extrn XCreateSimpleWindow; display, parent, x, y, width, height, border_width, 
+      ;example ;display, rootwindow, 0, 0, 800, 600, 0, 0, 0xffffffff
+      extrn XCreateSimpleWindow ;display, parent, x, y, width, height, border_width, 
                                 ;border, background -out window
                                 ;window = unsigned long
+
       extrn XMapWindow;rdi display rsi window);
+
       ;extrn XCloseDisplay;rdi display
       extrn XInternAtom; rdi 0 rsi "WM_DELETE_WINDOW" rdx bool out rax Atom
 
       extrn XFlush; rdi MainDisplay
+
+      public _start
       
 _start:
       
@@ -27,6 +30,8 @@ _start:
       mov rdi,0
       call XOpenDisplay
       mov r15,rax;save display
+
+      ;maybe we can save in memory
       ;mov [xdisplay],rax
       ;mov r15,[xdisplay]
      
@@ -44,15 +49,17 @@ _start:
       mov r9,600;height
      
       
+      ;passing arguments by stack not work
       ;7 8 9 argument in reverse order 
       mov rax,0xffffffff;white backgorund 
-      push rax
+      ;push rax
       
       mov rax,0;border
-      push rax
+      ;push rax
       
       mov rax,0;border_width
-      push rax
+      ;push rax
+
 
       call XCreateSimpleWindow
       mov r13,rax;save window
@@ -61,9 +68,10 @@ _start:
       mov rsi,r13
       call XMapWindow
       
-      sub rsp,32
       mov rdi,r15
       call XFlush
+
+      ;set window not close
       ;mov rdi,r15
       ;lea rsi, [delete_win_atom]
       ;mov rdx,0
