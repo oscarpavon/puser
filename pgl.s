@@ -4,6 +4,8 @@
 ; rdx	; 3rd param
 ; rsi	; 2nd param
 ; rdi	; 1st param
+;https://www.khronos.org/opengl/wiki/Programming_OpenGL_in_Linux:_GLX_and_Xlib
+
 format ELF64
 section '.text' executable
       extrn XOpenDisplay ;out eax display pointer ;rdi 0
@@ -14,13 +16,32 @@ section '.text' executable
       extrn XCreateSimpleWindow ;display, parent, x, y, width, height, border_width, 
                                 ;border, background -out window
                                 ;window = unsigned long
+      
+      ;rdi display
+      ;rsi root window
+      ;rdx x
+      ;r10 y
+      ;r8 x size
+      ;r9 y size
+      ;push SetWindowAttributes
+      ;push Mask
+      ;push visual
+      ;push InputOutput
+      ;push visual depth
+      ;push 0
+      extrn XCreateWindow 
 
-      extrn XMapWindow;rdi display rsi window);
+      ;rdi display
+      ;rsi window
+      extrn XMapWindow
 
-      ;extrn XCloseDisplay;rdi display
+      ;rdi display 
+      extrn XCloseDisplay
+
       extrn XInternAtom; rdi 0 rsi "WM_DELETE_WINDOW" rdx bool out rax Atom
 
-      extrn XFlush; rdi MainDisplay
+      ;rdi MainDisplay 
+      extrn XFlush
 
       ;rdi display rsi 
       ;rsi screen - can be 0
@@ -28,12 +49,25 @@ section '.text' executable
       ;out rax Visual - 0 on failure
       extrn glXChooseVisual
 
+      ;rdi display
+      ;rsi window
+      ;rdx Visual
+      ;r10 alloc AllocNone or AllocAll
+      ;out rax color map
+      extrn XCreateColormap
+
       public _start
 
 GLX_RGBA = 4
 GLX_DOUBLEBUFFER = 5
 GLX_DEPTH_SIZE = 12
 AllocNone = 0	;create map with no entries
+
+ExposureMask = 0x8000
+InputOutput = 1
+CWEventMask = 0x800
+CWColorMap = 0x2000
+CWColorMapCWEventMask = 0x2800
 
       
 _start:
@@ -47,6 +81,23 @@ _start:
       mov rsi,0
       lea rdx,[glx_attributes]
       call glXChooseVisual
+      mov r14, rax;save visual
+
+      mov rdi, r15
+      call XDefaultRootWindow
+      mov r13, rax;save default root window
+
+
+      mov rdi,r15
+      mov rsi,r13;root window
+      mov qword rdx, [r14]
+      mov r10, AllocNone
+      call XCreateColormap
+      mov r13, rax ;save color map
+
+      
+
+
 
 
       jmp $
@@ -56,9 +107,6 @@ _start:
       ;mov r15,[xdisplay]
      
 
-      mov rdi, r15
-      call XDefaultRootWindow
-      mov r14, rax;save default root window
 
       
       mov rdi,r15;display
@@ -114,3 +162,15 @@ xdisplay dq ?
 
 glx_attributes dd GLX_RGBA, GLX_DEPTH_SIZE, 12, GLX_DOUBLEBUFFER
                dq 0;in Xlib None value are 8bytes
+
+XSetWindowAttributes rq 4
+                        rd 3
+                        rd 1;align
+                        rq 2
+                        rd 1;
+                        rd 1;align current = 72 bytes
+                        rq 2;event mask 1
+                        rd 1;
+                        rd 1;align current = 96 bytes
+                        rq 2; color map
+                        ;total 112

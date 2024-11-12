@@ -49,7 +49,6 @@ _start:
       mov r9,600;height
      
       
-      ;passing arguments by stack not work
       ;7 8 9 argument in reverse order 
       mov rax,0xffffffff;white backgorund 
       push rax
