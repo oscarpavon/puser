@@ -21,6 +21,8 @@ SYS_CLOSE = 3
 SYS_LSEEK = 8
 SYS_BRK = 12
 SYS_IOCTL = 16
+SYS_FORK = 57
+SYS_EXECVE = 59
 SYS_EXIT = 60
 
 ;end syscall
@@ -64,6 +66,20 @@ read:
 
 write:
       mov rax,SYS_WRITE
+      syscall
+      ret
+
+;none argument
+fork:
+      mov rax,SYS_FORK  
+      syscall
+      ret
+
+;rdi file path
+;rsi argument value
+;rdx environment pointer
+execve:
+      mov rax,SYS_EXECVE
       syscall
       ret
 

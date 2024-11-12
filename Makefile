@@ -1,10 +1,13 @@
-all: bin_dir pcc pwin hex pe
+all: bin_dir pcc pwin hex pe psh
 
 hex:
 	fasm hex.s ./bin/hex
 
 bin_dir:
 	mkdir -p ./bin
+
+psh: psh.s
+	fasm psh.s ./bin/psh
 
 pe: pe.s
 	fasm pe.s ./bin/pe
@@ -27,4 +30,5 @@ syscall.o: syscallc.s
 clean:
 	rm -f *.o pcc
 	rm -f out.s
+	rm -f ./bin/*
 
