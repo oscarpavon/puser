@@ -1,4 +1,11 @@
-all: bin_dir pcc pwin hex pe psh
+all: bin_dir pcc pwin hex pe psh pgl
+
+
+pgl.o: pgl.s
+	fasm pgl.s pgl.o
+
+pgl: pgl.o
+	ld -znoexecstack -znocombreloc -dynamic-linker /lib/ld-linux-x86-64.so.2 pgl.o -o ./bin/pgl -lX11 -lGL
 
 hex:
 	fasm hex.s ./bin/hex
