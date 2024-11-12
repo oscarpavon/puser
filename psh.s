@@ -13,13 +13,32 @@ segment readable executable
 
 entry $
 
+
+parent_process:
+	
+	lea rsi, [shell]
+	mov rdx, shell_size
+	call print
+		
+	
+	;wait for command
+	mov rdi,STDIN
+	lea rsi,[buffer]
+	mov rdx,40
+	call read
+	
 	call fork
 	cmp rax,0
 	je child_process
 
-parent_process:
-	;wait for command
-	jmp $
+	mov rdi,rax;child pid
+	mov rsi, 0
+	mov rdx, 0
+	mov r10, 0
+	call wait4;stop until child finish
+
+
+	jmp parent_process
 
 	call sys_exit
 
@@ -36,3 +55,5 @@ segment readable writeable
 
 buffer rb 50 ;50 characters
 ls_program db '/bin/ls',0
+shell db '$'
+shell_size = $ - shell

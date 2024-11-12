@@ -24,10 +24,11 @@ SYS_IOCTL = 16
 SYS_FORK = 57
 SYS_EXECVE = 59
 SYS_EXIT = 60
+SYS_WAIT4 = 61
 
 ;end syscall
 
-
+;files
 SEEK_SET = 0	;Seek from beginning of file
 SEEK_CUR = 1	;Seek from current position
 SEEK_END = 2	;Seek from end of file
@@ -35,6 +36,10 @@ SEEK_END = 2	;Seek from end of file
 EACCES = 13
 
 O_RDONLY = 0000o
+;end files
+
+;proces identification
+WNOHANG = 1
 
 ;Standard Linux file descriptors
 STDIN = 0
@@ -66,6 +71,17 @@ read:
 
 write:
       mov rax,SYS_WRITE
+      syscall
+      ret
+
+
+;rdi pid
+;rsi can be 0
+;rdx options, can be 0
+;r10 can be 0
+;out rax pid
+wait4:
+      mov rax,SYS_WAIT4
       syscall
       ret
 
