@@ -50,10 +50,11 @@ STDERR = 2
 TCGETS = 0x5401
 TCSETS = 0x5402
 
-TIOCGWINSZ	0x5413 ;terminal size
+TIOCGWINSZ = 0x5413 ;terminal size
 
 
-ICANON = 0x00000002
+ICANON = 0000002
+ECHO = 0000010 ; Enable echo
 
 ;rdi file descriptor
 ;rsi command IOCTL number

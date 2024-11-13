@@ -17,14 +17,13 @@ segment readable executable
 
 entry $
 
-	;mov rdx,clear_screen_size
-	;lea rsi,[clear_screen]
-	;call print
+	mov rdx,clear_screen_size
+	lea rsi,[clear_screen]
+	call print
 
-	call open_file_and_print
 
-	jmp $
 	
+
 	;get terminal size
 	mov rdi, STDOUT
 	mov rsi, TIOCGWINSZ
@@ -42,6 +41,7 @@ entry $
 
 	mov eax, [termios+local_mode_offset]
 	mov edx, ICANON
+	or edx, ECHO
 	not edx
 	and eax,edx
 	mov [termios+local_mode_offset], eax
