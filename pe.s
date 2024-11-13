@@ -24,6 +24,13 @@ entry $
 	call open_file_and_print
 
 	jmp $
+	
+	;get terminal size
+	mov rdi, STDOUT
+	mov rsi, TIOCGWINSZ
+	lea rdx, [winsize];row [winsize] col [winsize+2]
+	call ioctl
+
 
 	mov rdi, STDIN
 	mov rsi, TCGETS
@@ -185,3 +192,4 @@ termios rd 4;c_iflag input mode flags 4 bytes each
 				rb 1;c_line line discipline
 				rb 19	; c_cc control characters 19 bytes
 
+winsize rw 4;store terminal size

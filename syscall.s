@@ -10,7 +10,7 @@ say_hello:
       syscall
       ret 0
 
-;;linux function argument RDI, RSI, RDX, RCX
+;;linux function argument RDI, RSI, RDX, RCX, R10, R8, R9
 ;;linux syscall sys_read = 0 sys_write = 1 sys_close = 3 sys_open = 2 sys_lseek = 8
 
 ;this need to be in rax before "syscall" asm
@@ -46,8 +46,12 @@ STDIN = 0
 STDOUT = 1
 STDERR = 2
 
+;ioctl
 TCGETS = 0x5401
 TCSETS = 0x5402
+
+TIOCGWINSZ	0x5413 ;terminal size
+
 
 ICANON = 0x00000002
 
