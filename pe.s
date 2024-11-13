@@ -9,7 +9,7 @@
 ESC = 0x1b
 local_mode_offset = 12
 
-FILE_SIZE = 2200
+FILE_SIZE = 2363
 
 format ELF64 executable 3
 
@@ -120,7 +120,7 @@ open_file_and_print:
 	call stat
 	
 	lea rdi, [stat_file+48]
-	mov qword [file_size],rdi
+	mov [file_size],FILE_SIZE
 
 
 	lea rdi,[file_to_open]
@@ -171,14 +171,14 @@ open_file_and_print:
 	mov rdi, r10
 	call close
 
-	mov rdx,[file_size]
+	mov rdx,FILE_SIZE
 	lea rsi,[allocated_memory]
 	call print
 
 
 	mov rdi,0
 	call brk
-	mov rdi,r11
+	mov rdi,[file_size]
 	sub rdi,rax
 	call brk
 	
