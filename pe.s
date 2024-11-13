@@ -21,6 +21,9 @@ entry $
 	lea rsi,[clear_screen]
 	call print
 
+	mov rdx,show_cursor_size
+	lea rsi,[show_cursor]
+	call print
 
 	
 
@@ -54,19 +57,54 @@ entry $
 	jne ioctl_error
 
 
-	mov rdx, msg_size
+	mov rdx, msg.size
 	lea rsi, [msg]
 	call print
 
 main_loop:
 
 	mov rdi, STDIN
-	lea rsi,[r10]
+	lea rsi,[input_char_buffer]
 	mov rdx,1
 	call read
 
+	cmp [input_char_buffer],'k'
+	je move_cursor_up
+	cmp [input_char_buffer],'j'
+	je move_cursor_down
+	cmp [input_char_buffer],'l'
+	je move_cursor_right
+	cmp [input_char_buffer],'h'
+	je move_cursor_left
+
+
 	jmp main_loop
 
+
+;input
+move_cursor_up:
+	mov rdx, ESCAPE_SIZE
+	lea rsi, [cursor_up]
+	call print
+	jmp main_loop
+
+move_cursor_down:
+	mov rdx, ESCAPE_SIZE
+	lea rsi, [cursor_down]
+	call print
+	jmp main_loop
+
+move_cursor_right:
+	mov rdx, ESCAPE_SIZE
+	lea rsi, [cursor_right]
+	call print
+	jmp main_loop
+
+move_cursor_left:
+	mov rdx, ESCAPE_SIZE
+	lea rsi, [cursor_left]
+	call print
+	jmp main_loop
 	call sys_exit
 
 ioctl_error:
@@ -158,7 +196,7 @@ erro_open:
 
 
 print_msg:
-	mov edx,msg_size
+	mov edx,msg.size
 	lea rsi,[msg]
 	call print
 	ret
@@ -168,9 +206,22 @@ print_msg:
 include "syscall.s"
 
 segment readable writeable
+;macro for get string size
+struc db [data]
+     {
+       common
+        . db data
+        .size = $ - .
+     }
+
+ESCAPE_SIZE = 4
+
+cursor_up db ESC, "[1A"
+cursor_down db ESC, "[1B"
+cursor_right db ESC, "[1C"
+cursor_left db ESC, "[1D"
 
 msg db 'Message',0xA
-msg_size = $-msg
 
 error_ioctl db 'ioctl error', 0xA
 error_ioctl_size = $-error_ioctl
@@ -184,6 +235,11 @@ allocated_memory dq ?
 
 clear_screen: db ESC, "[2J"
 clear_screen_size = $ - clear_screen
+
+show_cursor: db ESC, "[?25h"
+show_cursor_size = $ - show_cursor
+
+input_char_buffer rb 1
 
 termios rd 4;c_iflag input mode flags 4 bytes each
 						;c_oflag output mode flags
