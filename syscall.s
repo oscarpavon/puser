@@ -18,6 +18,7 @@ SYS_READ = 0
 SYS_WRITE = 1
 SYS_OPEN = 2
 SYS_CLOSE = 3
+SYS_STAT = 4
 SYS_LSEEK = 8
 SYS_BRK = 12
 SYS_IOCTL = 16
@@ -104,7 +105,14 @@ execve:
       syscall
       ret
 
-;rdi = file path or file descriptor
+;rdi file path
+;rsi stat buffer
+stat:
+      mov rax,SYS_STAT
+      syscall
+      ret
+
+;rdi = file path
 ;rsi = open mode
 ;out rax = file descriptor
 open:

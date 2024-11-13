@@ -5,7 +5,7 @@
 ; rdx	; 3rd param
 ; rsi	; 2nd param
 ; rdi	; 1st param
-
+;https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797 Escapes Sequences
 ESC = 0x1b
 local_mode_offset = 12
 
@@ -16,6 +16,8 @@ format ELF64 executable 3
 segment readable executable
 
 entry $
+	call open_file_and_print
+	call sys_exit
 
 	mov rdx,clear_screen_size
 	lea rsi,[clear_screen]
@@ -23,6 +25,10 @@ entry $
 
 	mov rdx,show_cursor_size
 	lea rsi,[show_cursor]
+	call print
+
+	mov rdx,3
+	lea rsi, [move_home]
 	call print
 
 	
@@ -56,10 +62,6 @@ entry $
 	cmp rax, 0
 	jne ioctl_error
 
-
-	mov rdx, msg.size
-	lea rsi, [msg]
-	call print
 
 main_loop:
 
@@ -113,6 +115,14 @@ ioctl_error:
 	jmp main_loop
 
 open_file_and_print:
+	lea rdi, [file_to_open]
+	lea rsi, [stat_file]
+	call stat
+	
+	lea rdi, [stat_file+48]
+	mov qword [file_size],rdi
+
+
 	lea rdi,[file_to_open]
 	mov rsi, O_RDONLY
 	call open
@@ -122,18 +132,18 @@ open_file_and_print:
 	mov r10,rax;save file descriptor
 
 
-	mov rdi,r10
-	mov rsi,0
-	mov rdx,SEEK_END
+	;mov rdi,r10
+	;mov rsi,0
+	;mov rdx,SEEK_END
 	;call lseek
 
 	;mov r11,rax ;save file size	
-	mov r11,FILE_SIZE ;save file size	
+	;mov r11,FILE_SIZE ;save file size	
 
 	mov rdi,0
 	call brk
 	mov [allocated_memory],rax
-	mov rdi,r11
+	mov rdi,[file_size]
 	add rdi,rax
 	call brk
 
@@ -141,34 +151,27 @@ open_file_and_print:
 	;mov rdi, r10
 	;call close
 	
-	mov rdi,r10
-	mov rsi,0
-	mov rdx,SEEK_SET
+	;mov rdi,r10
+	;mov rsi,0
+	;mov rdx,SEEK_SET
 	;call lseek
 
 	;lea rdi,[file_to_open]
 	;mov rsi, O_RDONLY
 	;call open
-	;cmp rax, EACCES
-	;je erro_open
 
 	;mov r10,rax;save file descriptor
 
-	;mov rax,'a'
-	;mov rbx,'c'
-	;mov [allocated_memory],rax
-	;mov [allocated_memory+1],rbx
-
 	mov rdi,r10
 	lea rsi,[allocated_memory]
-	mov rdx,FILE_SIZE
+	mov rdx,[file_size]
 	call read
 
 	
 	mov rdi, r10
 	call close
 
-	mov rdx,FILE_SIZE
+	mov rdx,[file_size]
 	lea rsi,[allocated_memory]
 	call print
 
@@ -214,8 +217,13 @@ struc db [data]
         .size = $ - .
      }
 
+
+;movement escapes Sequences
+move_home db ESC,'[H'
+
 ESCAPE_SIZE = 4
 
+cursor_mov_buffer db ESC, "[XX"
 cursor_up db ESC, "[1A"
 cursor_down db ESC, "[1B"
 cursor_right db ESC, "[1C"
@@ -249,3 +257,7 @@ termios rd 4;c_iflag input mode flags 4 bytes each
 				rb 19	; c_cc control characters 19 bytes
 
 winsize rw 4;store terminal size
+
+stat_file rb 144;offset size 48
+
+file_size rq 1
