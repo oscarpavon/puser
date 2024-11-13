@@ -9,6 +9,7 @@
 ESC = 0x1b
 local_mode_offset = 12
 
+FILE_SIZE = 2200
 
 format ELF64 executable 3
 
@@ -16,9 +17,13 @@ segment readable executable
 
 entry $
 
-	mov rdx,clear_screen_size
-	lea rsi,[clear_screen]
-	call print
+	;mov rdx,clear_screen_size
+	;lea rsi,[clear_screen]
+	;call print
+
+	call open_file_and_print
+
+	jmp $
 
 	mov rdi, STDIN
 	mov rsi, TCGETS
@@ -62,6 +67,7 @@ ioctl_error:
 	mov rdx, error_ioctl_size
 	jmp main_loop
 
+open_file_and_print:
 	lea rdi,[file_to_open]
 	mov rsi, O_RDONLY
 	call open
@@ -74,57 +80,65 @@ ioctl_error:
 	mov rdi,r10
 	mov rsi,0
 	mov rdx,SEEK_END
-	call lseek
+	;call lseek
 
-	mov r11,rax ;save file size	
+	;mov r11,rax ;save file size	
+	mov r11,FILE_SIZE ;save file size	
 
-	mov rdi,r11
+	mov rdi,0
 	call brk
 	mov [allocated_memory],rax
+	mov rdi,r11
+	add rdi,rax
+	call brk
 
 	
-	mov rdi, r10
-	call close
+	;mov rdi, r10
+	;call close
 	
 	mov rdi,r10
 	mov rsi,0
 	mov rdx,SEEK_SET
 	;call lseek
 
-	lea rdi,[file_to_open]
-	mov rsi, O_RDONLY
-	call open
+	;lea rdi,[file_to_open]
+	;mov rsi, O_RDONLY
+	;call open
 	;cmp rax, EACCES
 	;je erro_open
 
-	mov r10,rax;save file descriptor
+	;mov r10,rax;save file descriptor
 
-	mov rax,'a'
-	mov rbx,'c'
-	mov [allocated_memory],rax
-	mov [allocated_memory+1],rbx
+	;mov rax,'a'
+	;mov rbx,'c'
+	;mov [allocated_memory],rax
+	;mov [allocated_memory+1],rbx
 
 	mov rdi,r10
 	lea rsi,[allocated_memory]
-	mov rdx,r11
+	mov rdx,FILE_SIZE
 	call read
 
 	
 	mov rdi, r10
 	call close
 
-	mov rdx,r11
+	mov rdx,FILE_SIZE
 	lea rsi,[allocated_memory]
 	call print
 
+
+	mov rdi,0
+	call brk
+	mov rdi,r11
+	sub rdi,rax
+	call brk
 	
-	mov rdx,error_open_file_msg_size
-	lea rsi,[error_open_file_msg]
-	call print
+	;mov rdx,error_open_file_msg_size
+	;lea rsi,[error_open_file_msg]
+	;call print
 
-
-
-	call print_msg
+	;call print_msg
 
 	call sys_exit
 	
@@ -157,7 +171,7 @@ error_ioctl_size = $-error_ioctl
 error_open_file_msg db 'Cant open file',0xA
 error_open_file_msg_size = $-error_open_file_msg
 
-file_to_open db 'pe.s',0
+file_to_open db 'syscall.s',0
 
 allocated_memory dq ?
 
