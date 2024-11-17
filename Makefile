@@ -1,4 +1,4 @@
-all: bin_dir pcc pwin hex pe psh pgl
+all: bin_dir pcc pwin hex pe psh pgl dec
 
 
 pgl.o: pgl.s
@@ -9,6 +9,9 @@ pgl: pgl.o
 
 hex:
 	fasm hex.s ./bin/hex
+
+dec:
+	fasm dec.s ./bin/dec
 
 bin_dir:
 	mkdir -p ./bin
