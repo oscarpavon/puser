@@ -12,66 +12,47 @@ format ELF64 executable 3
 segment readable executable
 
 entry $
-	mov rcx,16	;max 64bit hex number digits
-	mov rax,0xFFFFFFFFFFFFFFF; max number - FF
-divide:
-	xor rdx,rdx
-	cmp rax,16
-	jl back
-	mov rbx,16
-	div rbx
-	mov r15b,dl
-	cmp rdx,10
-	jl decimal
-	jge hex
-	back:
-	cmp rax, 15
-	jg divide
-	cmp rax,10
-	mov r14,1;last number
-	mov r15b,al
-	jl decimal
-	jge hex
-	finish:
-	cmp rcx,0
-	je not_fill
-	fill_zero:
-		mov al,'0'
-		mov byte [msg+rcx],al
-		dec rcx
-		cmp rcx,0
-		jne fill_zero
-		mov al,'0'
-		mov byte [msg+rcx],al
-	
-	not_fill:
 
-	mov rdx,17
-	lea rsi,[msg]
-	call print
+
+	mov rdi,0xFFFF
+	call print_hex
+	mov rdi,0xCCDD
+	call print_hex
 
 	call sys_exit
-	
 
-decimal:
-	add r15b,'0'
-	jmp put_char
+;rdi value
+;rsi amount of bits 
+;rdx destination buffer
+;rax amount of bytes written to output buffer
+print_hex:
+	mov rsi,64
+	lea rdx,[buffer]
+	xor rax,rax
+	shr rsi,2 ;divide by 4
+	add rdx,rsi
+	nibble:
+		lea r9,[hex_table]
+		mov bl,dil
+		and bl,0x0f
+		add r9b,bl
+		mov bl,[r9]
+		sub rdx,1
+		mov byte [rdx],bl
+		shr rdi,4
+		add rax,1
+		cmp rax,rsi
+		jl nibble
 
-hex:
-	sub r15b,10
-	add r15b,'a'
-	jmp put_char
+	mov rdx,17
+	lea rsi,[buffer]
+	call print
 
-put_char:
-	mov byte [msg+rcx],r15b
-	dec rcx
-	cmp r14,1
-	je finish
-	jne back
+	ret
 
 include "syscall.s"
 
 segment readable writeable
 
-msg db 'FFFFFFFFFFFFFFFF',0xA
-msg_size = $-msg
+hex_table db '0123456789abcdef'
+buffer db '                ',10
