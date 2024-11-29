@@ -1,5 +1,8 @@
-all: bin_dir pcc pwin hex pe psh pgl dec
+all: bin_dir pcc pwin hex pe psh pgl dec reboot
 
+
+reboot: reboot.s
+	fasm reboot.s ./bin/reboot
 
 pgl.o: pgl.s
 	fasm pgl.s pgl.o
