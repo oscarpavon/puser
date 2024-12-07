@@ -144,9 +144,11 @@ lseek:
 
 ;;end linux syscall
 
+;lea rsi,text
+;rcx size
 print:
-      mov edi,STDOUT
-      mov eax,SYS_WRITE
+      mov rax,SYS_WRITE
+      mov rdi,STDOUT
       syscall
       ret
 
