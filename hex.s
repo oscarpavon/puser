@@ -44,7 +44,7 @@ print_hex:
 		cmp rax,rsi
 		jl nibble
 
-	mov rdx,17
+	mov rdx,17;16 max digit plus 1 new line
 	lea rsi,[buffer]
 	call print
 

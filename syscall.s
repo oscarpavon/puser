@@ -145,7 +145,7 @@ lseek:
 ;;end linux syscall
 
 ;lea rsi,text
-;rcx size
+;rdx size
 print:
       mov rax,SYS_WRITE
       mov rdi,STDOUT
