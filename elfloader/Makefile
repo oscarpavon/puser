@@ -1,8 +1,14 @@
 
-all: loadelf hellofasm
+all: loadelf hellofasm binaryc
 
 loadelf: main.c
 	gcc -g main.c -o loadelf
+
+
+binaryc: binaryc.c
+	cc -pedantic -Wall -Werror -Wextra -std=c89 -fno-stack-protector -c binaryc.c
+	ld binaryc.o -T binary.ld -o binaryc
+
 
 hellofasm: hellofasm.s my_binary.s
 	fasm hellofasm.s hellofasm
