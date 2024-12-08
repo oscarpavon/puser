@@ -8,7 +8,7 @@
 
 int main(){
   
-	char binary_to_load[] = "binaryc";
+	char binary_to_load[] = "mixcfasm";
 	int my_file = open(binary_to_load, O_RDONLY);
 
   struct stat my_stat;
@@ -19,8 +19,8 @@ int main(){
 
 	void* my_binary = mmap(NULL,my_size,PROT_EXEC|PROT_READ,MAP_PRIVATE,my_file,0);
 
-	//( *( ( void (**)(void) )&my_binary) )();
+	( *( ( void (**)(void) )&my_binary) )();
 	
-	int result = ( *( ( int (**)(void) )&my_binary) )();
-	printf("The Result %i\n",result);
+	//int result = ( *( ( int (**)(void) )&my_binary) )();
+	//printf("The Result %i\n",result);
 }
