@@ -1,13 +1,10 @@
-
 #include <stdint.h>
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
 #include <sys/stat.h>
 #include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
 #include "elf.h"
-
-#define ELFABI __attribute__((sysv_abi))
 
 static void elf_get_image_size(
 	struct ElfHeader* kernel_header,
@@ -44,7 +41,10 @@ static void elf_get_image_size(
 	}
 }
 
-int main() {
+#define ELFABI __attribute__((sysv_abi))
+
+void load_elf(){
+
   FILE *file = fopen("hellofasm", "r");
   if (!file) {
     printf("File not found\n");
@@ -60,8 +60,6 @@ int main() {
 	memset(binary, 0, size);
 
 	fread(binary, size, 1, file);
-
-
 	uint64_t page_size = 4096;
 	uint64_t image_begin;
 	uint64_t image_end;
@@ -120,7 +118,7 @@ int main() {
 	uint64_t program_entry = image_address + header->entry - image_begin;
 	uint64_t* program_entry_address = (uint64_t*)program_entry;
 
-	printf("Program entry number %ld\n",program_entry);
+	printf("Program entry number %lx\n",program_entry);
 	printf("Program entry address %p\n",program_entry_address);
 
 	printf("now we can call the function\n");
@@ -141,5 +139,13 @@ int main() {
 
 
   printf("Read elf\n");
+}
+
+int main() {
+	
+	load_elf();
+
+	while(1){};
+
   return 0;
 }

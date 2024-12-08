@@ -1,8 +1,8 @@
 
 all: loadelf hellofasm binaryc loadbin
 
-loadelf: main.c
-	gcc -g main.c -o loadelf
+loadelf: loadelf.c
+	gcc -g loadelf.c -o loadelf
 
 loadbin: loadbin.c
 	cc loadbin.c -o loadbin
