@@ -23,6 +23,7 @@ SYS_FSTAT = 5
 SYS_LSEEK = 8
 SYS_BRK = 12
 SYS_IOCTL = 16
+SYS_SENDFILE = 40
 SYS_FORK = 57
 SYS_EXECVE = 59
 SYS_EXIT = 60
@@ -146,6 +147,15 @@ brk:
 ;rdi file descriptor to close
 close:
       mov rax,SYS_CLOSE
+      syscall
+      ret
+
+;rdi out file descriptor
+;rsi in file descriptor
+;rdx offset could be 0
+;r10 count
+sendfile:
+      mov rax,SYS_SENDFILE
       syscall
       ret
 
