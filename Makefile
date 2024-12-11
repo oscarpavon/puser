@@ -1,4 +1,7 @@
-all: bin_dir pcc pwin hex pe psh pgl dec reboot print_hello
+all: bin_dir pcc pwin hex pe psh pgl dec reboot print_hello cp
+
+cp: cp.s
+	fasm cp.s ./bin/cp
 
 print_hello: hello.o
 	gcc -nostdlib -znoexecstack -static print_hello.c hello.o -o ./bin/print_hello

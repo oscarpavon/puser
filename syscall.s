@@ -19,6 +19,7 @@ SYS_WRITE = 1
 SYS_OPEN = 2
 SYS_CLOSE = 3
 SYS_STAT = 4
+SYS_FSTAT = 5
 SYS_LSEEK = 8
 SYS_BRK = 12
 SYS_IOCTL = 16
@@ -36,7 +37,15 @@ SEEK_END = 2	;Seek from end of file
 
 EACCES = 13
 
-O_RDONLY = 0000o
+O_RDONLY	 =    0000o
+O_WRONLY	 =    0001o
+O_CREAT	   =    0100o	
+
+
+;Stat
+STAT_STRUCT_SIZE = 144
+STAT_MODE = 24
+STAT_SIZE = 48
 ;end files
 
 ;proces identification
@@ -109,6 +118,13 @@ execve:
 ;rsi stat buffer
 stat:
       mov rax,SYS_STAT
+      syscall
+      ret
+
+;rdi file descriptor
+;rsi stat buffer
+fstat:
+      mov rax,SYS_FSTAT
       syscall
       ret
 
